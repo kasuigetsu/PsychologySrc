@@ -25,6 +25,15 @@ public partial class PsychologyContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Patient> Patients { get; set; }
+    public DbSet<PatientNote> PatientNotes { get; set; }
+    public DbSet<Psychologist> Psychologist { get; set; }    
+    public DbSet<Shedule> Shedule { get; set; }
+    public DbSet<Therapy> Therapies { get; set; } 
     
-    public DbSet<Psychologist> Psychologist { get; set; }
+    
+
+
 }

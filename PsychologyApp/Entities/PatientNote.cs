@@ -2,8 +2,7 @@
 using System.Net.Mail;
 
 namespace PsychologyApp.WebApi.Entities
-{
-    
+{    
     public class PatientNote
     {
         public int Id { get; set; }
@@ -11,5 +10,6 @@ namespace PsychologyApp.WebApi.Entities
         public string? Content { get; set; }    
         public int PatientId { get; set; }
         public bool IsDeleted { get; set; }
+        public Patient Patient { get; set; }
     }
 }

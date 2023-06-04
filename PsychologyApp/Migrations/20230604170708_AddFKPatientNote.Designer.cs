@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PsychologyApp.WebApi.Models;
@@ -11,9 +12,11 @@ using PsychologyApp.WebApi.Models;
 namespace PsychologyApp.WebApi.Migrations
 {
     [DbContext(typeof(PsychologyContext))]
-    partial class PsychologyContextModelSnapshot : ModelSnapshot
+    [Migration("20230604170708_AddFKPatientNote")]
+    partial class AddFKPatientNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,8 +120,8 @@ namespace PsychologyApp.WebApi.Migrations
                         .HasColumnType("text")
                         .HasColumnName("phone_number");
 
-                    b.Property<int?>("PsychologistId")
-                        .HasColumnType("integer")
+                    b.Property<string>("PsychologistId")
+                        .HasColumnType("text")
                         .HasColumnName("psychologist_id");
 
                     b.Property<string>("Recommendations")
@@ -132,9 +135,6 @@ namespace PsychologyApp.WebApi.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_patients");
-
-                    b.HasIndex("PsychologistId")
-                        .HasDatabaseName("ix_patients_psychologist_id");
 
                     b.HasIndex("PhoneNumber", "EmailAddress")
                         .IsUnique()
@@ -304,15 +304,6 @@ namespace PsychologyApp.WebApi.Migrations
                     b.HasKey("Id")
                         .HasName("pk_shedule");
 
-                    b.HasIndex("PatientId")
-                        .HasDatabaseName("ix_shedule_patient_id");
-
-                    b.HasIndex("PsychologistId")
-                        .HasDatabaseName("ix_shedule_psychologist_id");
-
-                    b.HasIndex("TherapyId")
-                        .HasDatabaseName("ix_shedule_therapy_id");
-
                     b.ToTable("shedule", (string)null);
                 });
 
@@ -361,16 +352,6 @@ namespace PsychologyApp.WebApi.Migrations
                     b.Navigation("Shedule");
                 });
 
-            modelBuilder.Entity("PsychologyApp.WebApi.Entities.Patient", b =>
-                {
-                    b.HasOne("PsychologyApp.WebApi.Entities.Psychologist", "Psychologist")
-                        .WithMany()
-                        .HasForeignKey("PsychologistId")
-                        .HasConstraintName("fk_patients_psychologist_psychologist_id");
-
-                    b.Navigation("Psychologist");
-                });
-
             modelBuilder.Entity("PsychologyApp.WebApi.Entities.PatientNote", b =>
                 {
                     b.HasOne("PsychologyApp.WebApi.Entities.Patient", "Patient")
@@ -381,36 +362,6 @@ namespace PsychologyApp.WebApi.Migrations
                         .HasConstraintName("fk_patient_notes_patients_patient_id");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("PsychologyApp.WebApi.Entities.Shedule", b =>
-                {
-                    b.HasOne("PsychologyApp.WebApi.Entities.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_shedule_patients_patient_id");
-
-                    b.HasOne("PsychologyApp.WebApi.Entities.Psychologist", "Psychologist")
-                        .WithMany()
-                        .HasForeignKey("PsychologistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_shedule_psychologist_psychologist_id");
-
-                    b.HasOne("PsychologyApp.WebApi.Entities.Therapy", "Therapy")
-                        .WithMany()
-                        .HasForeignKey("TherapyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_shedule_therapies_therapy_id");
-
-                    b.Navigation("Patient");
-
-                    b.Navigation("Psychologist");
-
-                    b.Navigation("Therapy");
                 });
 #pragma warning restore 612, 618
         }

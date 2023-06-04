@@ -13,5 +13,8 @@ namespace PsychologyApp.WebApi.Entities
         public int NotifStatus { get; set; }
         public int TherapyId { get; set; }
         public bool IsDeleted { get; set; }
+        public Psychologist Psychologist { get; set; }
+        public Patient Patient { get; set; }
+        public Therapy Therapy { get; set;}
     }
 }

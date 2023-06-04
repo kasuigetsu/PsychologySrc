@@ -3,8 +3,7 @@ using System.Security;
 
 namespace PsychologyApp.WebApi.Entities
 {
-    [Index(nameof(PhoneNumber), IsUnique = true)]
-    [Index(nameof(EmailAddress), IsUnique = true)]    
+    [Index(nameof(PhoneNumber), nameof(EmailAddress), IsUnique = true)]    
     public class Patient
     {
         public int Id { get; set; } 
@@ -18,7 +17,9 @@ namespace PsychologyApp.WebApi.Entities
         public string? Anamnesis { get; set; }
         public string? Recommendations { get; set; }
         public bool IsReceiveNotif { get; set; }
-        public string? PsychologistId { get; set; }
+        public int? PsychologistId { get; set; }
         public bool IsDeleted { get; set; }
+
+        public Psychologist Psychologist { get; set; }
     }
 }

@@ -15,5 +15,7 @@
         public bool IsChecked { get; set; }
         public int SheduleId { get; set; }
         public bool IsDeleted { get; set; }
+
+        public Shedule Shedule { get; set; }
     }
 }

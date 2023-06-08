@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PsychologyApp.WebApi.Models;
+using PsychologyApp.WebApi.Services;
+using PsychologyApp.WebApi.Services.Impl;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,16 @@ builder.Services.AddDbContext<PsychologyContext>(options => options
     .UseSnakeCaseNamingConvention());
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+#endregion
+
+#region Services
+
+builder.Services.AddScoped<IPsychologistService, PsychologistService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<ISheduleService, SheduleService>();
+builder.Services.AddScoped<ITherapyService, TherapyService>();
+
 #endregion
 
 var app = builder.Build();

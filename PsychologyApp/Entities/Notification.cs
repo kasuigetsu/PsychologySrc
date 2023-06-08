@@ -11,11 +11,12 @@
         /// </summary>
         public int Type { get; set; }        
         public string? Reason { get; set; }
+        public int Role { get; set; }
+        public int UserId { get; set; }
         public bool IsSend { get; set; }
-        public bool IsChecked { get; set; }
-        public int SheduleId { get; set; }
+        public bool IsChecked { get; set; }        
         public bool IsDeleted { get; set; }
 
-        public Shedule Shedule { get; set; }
+        
     }
 }

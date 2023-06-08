@@ -38,5 +38,7 @@ namespace PsychologyApp.WebApi.Entities
         public bool IsReceiveNotif { get; set; }
         [Column("is_deleted")]
         public bool IsDeleted { get; set; }
+        [Column("need_create_new_appointment")]
+        public DateTime? needCreateNewAppointment { get; set; }
     }
 }

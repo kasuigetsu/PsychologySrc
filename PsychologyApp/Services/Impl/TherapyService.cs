@@ -1,32 +1,109 @@
-﻿using PsychologyApp.WebApi.Entities.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PsychologyApp.WebApi.Entities;
+using PsychologyApp.WebApi.Entities.Models;
+using PsychologyApp.WebApi.Helpers;
+using PsychologyApp.WebApi.Models;
 
 namespace PsychologyApp.WebApi.Services.Impl
 {
     public class TherapyService : ITherapyService
     {
-        public Task<bool> CreateOrEditTherapyAsync(int psychoId, TherapyModel therapy)
+        private PsychologyContext _ctx;
+        private Helper _helper;
+
+        public TherapyService()
         {
-            throw new NotImplementedException();
+            _ctx = new PsychologyContext();
+            _helper = new Helper();
         }
 
-        public Task<bool> DeleteTherapyAsync(int psycoId, int therapyId)
+        //todo: добавить psychologId, show в Therapy
+        public async Task<bool> CreateTherapyAsync(TherapyModel therapy, int psychoId)
         {
-            throw new NotImplementedException();
+            if (therapy.Title == null || therapy.Description == null)
+                throw new Exception("Пожалуйста, заполните все поля");
+
+            var newTherapy = new Therapy
+            {
+                Title = therapy.Title,
+                Description = therapy.Description,
+                Cost = therapy.Cost,
+                IsDeleted = false
+            };
+                       
+            _ctx.Therapies.Add(newTherapy);
+            await _ctx.SaveChangesAsync();
+
+            return true;
         }
 
-        public Task<TherapyModel> GetTherapyAsync(int psychoId, int therapyId)
+        public async Task<bool> EditTherapyAsync(TherapyModel therapy, int psychoId)
         {
-            throw new NotImplementedException();
+            if (therapy.Title == null || therapy.Description == null)
+                throw new Exception("Пожалуйста, заполните все поля");
+
+            var oldTherapy = await _ctx.Therapies
+                .Where(x => x.Id == therapy.Id)
+                //.Where(x => x.psychoId == psychoId)
+                .Where(x => !x.IsDeleted)
+                .FirstOrDefaultAsync();
+
+            if (oldTherapy == null)
+                throw new Exception($"Терапия не найдена, id: {therapy.Id}");
+
+            oldTherapy.Title = therapy.Title;
+            oldTherapy.Description = therapy.Description;
+            oldTherapy.Cost = therapy.Cost;
+            //oldTherapy.Show = therapy.Show
+
+            await _ctx.SaveChangesAsync();  
+            
+            return true;
         }
 
-        public Task<TherapyModel> GetTherapyListByIdAsync(int psychoId)
+        public async Task<bool> DeleteTherapyAsync(int therapyId, int psychoId)
         {
-            throw new NotImplementedException();
+            var therapy = await _ctx.Therapies
+               .Where(x => x.Id == therapyId)
+               //.Where(x => x.psychoId == psychoId)
+               .Where(x => !x.IsDeleted)
+               .FirstOrDefaultAsync();
+
+            if (therapy == null)
+                throw new Exception($"Терапия не найдена, id: {therapyId}");
+
+            therapy.IsDeleted = true;
+
+            await _ctx.SaveChangesAsync();
+
+            return true;
         }
 
-        public Task<TherapyModel> GetTherapyListByUnicodeAsync(int unicode)
+        public async Task<Therapy> GetTherapyAsync(int therapyId)
         {
-            throw new NotImplementedException();
+            var therapy = await _ctx.Therapies
+             .Where(x => x.Id == therapyId)
+             //.Where(x => x.psychoId == psychoId)
+             .Where(x => !x.IsDeleted)
+             .FirstOrDefaultAsync();
+
+            if (therapy == null)
+                throw new Exception($"Терапия не найдена, id: {therapyId}");
+
+            return therapy;
+        }
+
+        public async Task<List<Therapy>> GetTherapyListAsync(int psychoId)
+        {
+            var therapies = await _ctx.Therapies
+                //.Where(x => x.psychoId == psychoId || x.psychoId == 0)
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+
+            if (!therapies.Any())
+                throw new Exception("Список терапий пуст");
+
+            return therapies;
         }
     }
 }

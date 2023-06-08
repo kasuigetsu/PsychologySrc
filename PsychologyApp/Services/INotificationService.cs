@@ -5,6 +5,7 @@ namespace PsychologyApp.WebApi.Services
     public interface INotificationService
     {
         public Task<bool> CreateNotification(int userId);
-        public Task<List<NotificationModel>> GetNotifications(int userId, int userRole);        
+        public Task<List<NotificationModel>> GetPatientNotifications(int userId);
+        public Task<List<NotificationModel>> GetPsychologistNotifications(int userId);
     }
 }

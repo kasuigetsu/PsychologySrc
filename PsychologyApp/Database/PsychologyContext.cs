@@ -21,7 +21,10 @@ public partial class PsychologyContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        OnModelCreatingPartial(modelBuilder);        
+        OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<Psychologist>()
+                .ToTable("psychologist");        
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

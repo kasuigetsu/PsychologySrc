@@ -13,8 +13,7 @@ namespace PsychologyApp.WebApi.Entities
         [Column("patient_id")]
         public int PatientId { get; set; }
         [Column("appointment_date")]
-        public DateTime AppointmentDate { get; set; }
-        //public needCreateNewAppointmentDate
+        public DateTime AppointmentDate { get; set; }        
         [Column("status")]
         public int Status { get; set; }
         [Column("notif_status")]
@@ -23,6 +22,8 @@ namespace PsychologyApp.WebApi.Entities
         public int TherapyId { get; set; }        
         [Column("is_deleted")]
         public bool IsDeleted { get; set; }
+        [Column("is_weekend")]
+        public bool IsWeekend { get; set; }
         public Psychologist Psychologist { get; set; }
         public Patient Patient { get; set; }
         public Therapy Therapy { get; set;}

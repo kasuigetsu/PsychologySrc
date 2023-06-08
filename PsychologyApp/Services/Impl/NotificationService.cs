@@ -127,24 +127,11 @@ namespace PsychologyApp.WebApi.Services.Impl
             return true;
         }
 
-        public async Task<List<Notification>> GetPatientNotifications(int userId)
+        public async Task<List<Notification>> GetUserNotifications(int userId, int role)
         {
             var notifications = await _ctx.Notifications
                 .Where(x => x.UserId == userId)
-                .Where(x => x.Role == (int)UserRole.Patient)
-                .Where(x => !x.IsChecked)
-                .Where(x => !x.IsDeleted)
-                .Take(50)
-                .ToListAsync();
-
-            return notifications;
-        }
-
-        public async Task<List<Notification>> GetPsychologistNotifications(int userId)
-        {
-            var notifications = await _ctx.Notifications
-                .Where(x => x.UserId == userId)
-                .Where(x => x.Role == (int)UserRole.Psychology)
+                .Where(x => x.Role == role)
                 .Where(x => !x.IsChecked)
                 .Where(x => !x.IsDeleted)
                 .Take(50)

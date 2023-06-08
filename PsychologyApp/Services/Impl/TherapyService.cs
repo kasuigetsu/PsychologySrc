@@ -16,8 +16,7 @@ namespace PsychologyApp.WebApi.Services.Impl
             _ctx = new PsychologyContext();
             _helper = new Helper();
         }
-
-        //todo: добавить psychologId, show в Therapy
+                
         public async Task<bool> CreateTherapyAsync(TherapyModel therapy, int psychoId)
         {
             if (therapy.Title == null || therapy.Description == null)
@@ -27,6 +26,8 @@ namespace PsychologyApp.WebApi.Services.Impl
             {
                 Title = therapy.Title,
                 Description = therapy.Description,
+                psychoId = therapy.psychoId,
+                NeedShow = true,
                 Cost = therapy.Cost,
                 IsDeleted = false
             };
@@ -44,7 +45,7 @@ namespace PsychologyApp.WebApi.Services.Impl
 
             var oldTherapy = await _ctx.Therapies
                 .Where(x => x.Id == therapy.Id)
-                //.Where(x => x.psychoId == psychoId)
+                .Where(x => x.psychoId == psychoId)
                 .Where(x => !x.IsDeleted)
                 .FirstOrDefaultAsync();
 
@@ -54,10 +55,9 @@ namespace PsychologyApp.WebApi.Services.Impl
             oldTherapy.Title = therapy.Title;
             oldTherapy.Description = therapy.Description;
             oldTherapy.Cost = therapy.Cost;
-            //oldTherapy.Show = therapy.Show
+            oldTherapy.NeedShow = therapy.NeedShow;
 
-            await _ctx.SaveChangesAsync();  
-            
+            await _ctx.SaveChangesAsync();              
             return true;
         }
 
@@ -65,7 +65,7 @@ namespace PsychologyApp.WebApi.Services.Impl
         {
             var therapy = await _ctx.Therapies
                .Where(x => x.Id == therapyId)
-               //.Where(x => x.psychoId == psychoId)
+               .Where(x => x.psychoId == psychoId)
                .Where(x => !x.IsDeleted)
                .FirstOrDefaultAsync();
 
@@ -75,15 +75,14 @@ namespace PsychologyApp.WebApi.Services.Impl
             therapy.IsDeleted = true;
 
             await _ctx.SaveChangesAsync();
-
             return true;
         }
 
-        public async Task<Therapy> GetTherapyAsync(int therapyId)
+        public async Task<Therapy> GetTherapyAsync(int therapyId, int psychoId)
         {
             var therapy = await _ctx.Therapies
              .Where(x => x.Id == therapyId)
-             //.Where(x => x.psychoId == psychoId)
+             .Where(x => x.psychoId == psychoId)
              .Where(x => !x.IsDeleted)
              .FirstOrDefaultAsync();
 
@@ -93,15 +92,18 @@ namespace PsychologyApp.WebApi.Services.Impl
             return therapy;
         }
 
-        public async Task<List<Therapy>> GetTherapyListAsync(int psychoId)
+        public async Task<List<Therapy>> GetTherapyListAsync(int psychoId, bool IsPatient = false)
         {
             var therapies = await _ctx.Therapies
-                //.Where(x => x.psychoId == psychoId || x.psychoId == 0)
+                .Where(x => x.psychoId == psychoId || x.psychoId == 0)                
                 .Where(x => !x.IsDeleted)
-                .ToListAsync();
+                .ToListAsync();           
 
             if (!therapies.Any())
                 throw new Exception("Список терапий пуст");
+
+            if(IsPatient)
+                therapies = therapies.Where(x => x.NeedShow).ToList();
 
             return therapies;
         }

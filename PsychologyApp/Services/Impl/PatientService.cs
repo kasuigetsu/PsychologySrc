@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PsychologyApp.WebApi.Entities;
 using PsychologyApp.WebApi.Entities.Models;
+using PsychologyApp.WebApi.Enum;
 using PsychologyApp.WebApi.Helpers;
 using PsychologyApp.WebApi.Models;
 using PsychologyApp.WebApi.Requests;
+using System.Security.Cryptography.Xml;
 
 namespace PsychologyApp.WebApi.Services.Impl
 {
@@ -91,10 +93,45 @@ namespace PsychologyApp.WebApi.Services.Impl
             return true;
         }
 
-        public Task<bool> SendCodeAsync(string email)
+        public async Task<bool> SendCodeAsync(SendCodeRequest request)
+        {   
+            var newCode = Helper.GenerateUnicode();
+            var isSend = MailHelper.SendEmail(request.email, newCode);
+
+            var newCodeBusket = new CodeBusket
+            {
+                userId = request.userId,
+                userRole = (int)UserRole.Patient,
+                code = newCode,
+                IsDeleted = false
+            };
+
+            _ctx.CodeBusket.Add(newCodeBusket);
+            await _ctx.SaveChangesAsync();
+
+            return isSend;
+        }
+
+        public async Task<bool> CheckCodeAsync(CheckCodeRequest request)
         {
-            throw new NotImplementedException();
-        }      
+            var codeBusket = await _ctx.CodeBusket
+                .Where(x => x.userId == request.userId)
+                .Where(x => x.userRole == (int)UserRole.Patient)
+                .Where(x => !x.IsDeleted)
+                .FirstOrDefaultAsync();
+
+            if (codeBusket == null)
+                throw new Exception("Код не найден. Попробуйте отправить его еще раз.");
+
+            if (codeBusket.code != request.code)
+                throw new Exception("Вы ввели неверный код, попробуйте еще раз.");
+            else
+            {
+                codeBusket.IsDeleted = true;
+            }
+
+            return true;
+        }
 
         #endregion
 

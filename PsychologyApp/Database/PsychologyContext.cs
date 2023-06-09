@@ -35,7 +35,7 @@ public partial class PsychologyContext : DbContext
     public DbSet<Psychologist> Psychologist { get; set; }    
     public DbSet<Shedule> Shedule { get; set; }
     public DbSet<Therapy> Therapies { get; set; } 
-    
+    public DbSet<CodeBusket> CodeBusket { get; set; }
     
 
 

@@ -2,7 +2,7 @@
 {
     public enum UserRole
     {
-        Psychology = 1,
+        Psychologist = 1,
         Patient = 2,
     }
 }

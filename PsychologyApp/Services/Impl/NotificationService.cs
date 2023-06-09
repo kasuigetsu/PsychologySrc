@@ -46,7 +46,7 @@ namespace PsychologyApp.WebApi.Services.Impl
                 {
                     Message = psychoMsg,
                     Type = (int)NotificationStatus.Approved,
-                    Role = (int)UserRole.Psychology,
+                    Role = (int)UserRole.Psychologist,
                     UserId = appoint.PsychologistId,                    
                     IsChecked = false,
                     IsDeleted = false
@@ -93,7 +93,7 @@ namespace PsychologyApp.WebApi.Services.Impl
                 {
                     Message = psychoMsg,
                     Type = (int)NotificationStatus.Declined,
-                    Role = (int)UserRole.Psychology,
+                    Role = (int)UserRole.Psychologist,
                     UserId = appoint.PsychologistId,
                     IsChecked = false,
                     IsDeleted = false

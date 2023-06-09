@@ -31,7 +31,11 @@ namespace PsychologyApp.WebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Code")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("code")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("code");
@@ -46,10 +50,6 @@ namespace PsychologyApp.WebApi.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_code_busket");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_code_busket_code");
 
                     b.ToTable("code_busket", (string)null);
                 });

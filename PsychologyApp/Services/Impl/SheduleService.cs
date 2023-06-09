@@ -5,6 +5,7 @@ using PsychologyApp.WebApi.Enum;
 using PsychologyApp.WebApi.Helpers;
 using PsychologyApp.WebApi.Models;
 using PsychologyApp.WebApi.Requests;
+using System.Runtime.InteropServices;
 
 namespace PsychologyApp.WebApi.Services.Impl
 {
@@ -67,9 +68,24 @@ namespace PsychologyApp.WebApi.Services.Impl
             return true;
         }
 
-        public Task<bool> CreateSheduleAsync(CreateSheduleRequest request)
+        public async Task<bool> CreateSheduleAsync(CreateSheduleRequest request)
         {
-            var shedule = new List<Shedule>();
+            var psycho = await _ctx.Psychologist
+                .Where(x => x.Id == request.psychoId)
+                .Where(x => !x.IsDeleted)
+                .FirstOrDefaultAsync();
+
+            if (psycho == null)
+                throw new Exception($"Невозможно создать расписание. Неизвестный психолог id = {request.psychoId}.") ;
+
+            var shedule = await _ctx.Shedule
+                .Where(x => x.PsychologistId == request.psychoId)
+                .Where(x => x.AppointmentDate <= psycho.needCreateNewAppointment)
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+
+            if (!shedule.Any())
+                shedule = new List<Shedule>();         
 
             var wkndsDict = new Dictionary<string, DayOfWeek>()
             {
@@ -82,9 +98,14 @@ namespace PsychologyApp.WebApi.Services.Impl
                 { "sa",  DayOfWeek.Saturday },
             };
 
-            var wknds = request.Weekends.Split("&");
+            var wkndsReq = request.Weekends.Split("&");
+            var psychoWknds = new List<DayOfWeek>();
 
-
+            foreach (var a in wkndsReq)
+            {
+                if (wkndsDict.Keys.Contains(a))
+                    psychoWknds.Add(wkndsDict[a]);
+            }
 
             throw new NotImplementedException();
         }

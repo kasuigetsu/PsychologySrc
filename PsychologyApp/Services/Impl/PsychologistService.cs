@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PsychologyApp.WebApi.Entities;
 using PsychologyApp.WebApi.Entities.Models;
+using PsychologyApp.WebApi.Enum;
 using PsychologyApp.WebApi.Helpers;
 using PsychologyApp.WebApi.Models;
 using PsychologyApp.WebApi.Requests;
@@ -54,7 +55,7 @@ namespace PsychologyApp.WebApi.Services.Impl
                     throw new Exception("Почта уже используется");
                 
                 var userUnicodes = users.Select(x => x.Unicode).ToList();
-                var unicode = _helper.GenerateUnicode(userUnicodes);
+                var unicode = Helper.GenerateUnicode(userUnicodes);
                 var hashPassword = _helper.HashPassword(user.Password);
 
                 var newUser = new Psychologist
@@ -80,7 +81,7 @@ namespace PsychologyApp.WebApi.Services.Impl
              }
             catch (Exception ex)
             {
-                return false;
+                throw new Exception(ex.Message);
             }            
         }
 
@@ -101,10 +102,46 @@ namespace PsychologyApp.WebApi.Services.Impl
             return true;            
         }
 
-        public Task<bool> SendCodeAsync(string email)
-        {
-            throw new NotImplementedException();
+        public async Task<bool> SendCodeAsync(SendCodeRequest request)
+        {   
+            var newCode = Helper.GenerateUnicode();
+            var isSend = MailHelper.SendEmail(request.email, newCode);
+
+            var newCodeBusket = new CodeBusket
+            {
+                userId = request.userId,
+                userRole = (int)UserRole.Psychologist,
+                code = newCode,
+                IsDeleted = false
+            };
+
+            _ctx.CodeBusket.Add(newCodeBusket);
+            await _ctx.SaveChangesAsync();
+
+            return isSend;
         }
+
+        public async Task<bool> CheckCodeAsync(CheckCodeRequest request)
+        {
+            var codeBusket = await _ctx.CodeBusket
+               .Where(x => x.userId == request.userId)
+               .Where(x => x.userRole == (int)UserRole.Psychologist)
+               .Where(x => !x.IsDeleted)
+               .FirstOrDefaultAsync();
+
+            if (codeBusket == null)
+                throw new Exception("Код не найден. Попробуйте отправить его еще раз.");
+
+            if (codeBusket.code != request.code)
+                throw new Exception("Вы ввели неверный код, попробуйте еще раз.");
+            else
+            {
+                codeBusket.IsDeleted = true;
+            }
+
+            return true;
+        }
+
         #endregion
 
         public async Task<Psychologist> GetUserInfoAsync(int userId)
@@ -181,6 +218,7 @@ namespace PsychologyApp.WebApi.Services.Impl
             await _ctx.SaveChangesAsync();
 
             return true;
-        }  
+        }
+      
     }
 }

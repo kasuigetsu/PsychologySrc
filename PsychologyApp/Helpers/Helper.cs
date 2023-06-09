@@ -17,7 +17,7 @@ namespace PsychologyApp.WebApi.Helpers
             return Convert.ToBase64String(hash);
         }
         
-        public string GenerateUnicode(List <string> unicodes)
+        public static string GenerateUnicode(List <string> unicodes = null)
         {
             Random random = new Random();
 
@@ -32,12 +32,6 @@ namespace PsychologyApp.WebApi.Helpers
                 GenerateUnicode(unicodes);
 
             return result;                      
-        }
-
-        public bool IsValidEmail(string userEmail)
-        {
-            var email = new EmailAddressAttribute();
-            return email.IsValid(userEmail);
         }
 
         public string IsValidPassword(string password) 
@@ -57,7 +51,7 @@ namespace PsychologyApp.WebApi.Helpers
                     user.ExperienceInfo == null || user.EmailAddress == null || user.Password == null)
                 return "Пожалуйста заполните все обязательные поля";
 
-            if (IsValidEmail(user.EmailAddress))
+            if (MailHelper.IsValidEmail(user.EmailAddress))
                 return "Ваша почта имеет неверный формат";
 
             var checkPass = IsValidPassword(user.Password);
@@ -73,7 +67,7 @@ namespace PsychologyApp.WebApi.Helpers
                     || user.EmailAddress == null || user.Password == null)
                 return "Пожалуйста заполните все обязательные поля";
 
-            if (IsValidEmail(user.EmailAddress))
+            if (MailHelper.IsValidEmail(user.EmailAddress))
                 return "Ваша почта имеет неверный формат";
 
             var checkPass = IsValidPassword(user.Password);

@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Net.Mail;
 
 namespace PsychologyApp.WebApi.Entities
-{
-    [Index(nameof(Code), IsUnique = true)]
+{    
     public class CodeBusket
     {
         [Column("id")]
@@ -14,6 +13,8 @@ namespace PsychologyApp.WebApi.Entities
         [Column("user_role")]
         public int userRole { get; set; }
         [Column("code")]
-        public string Code { get; set; }      
+        public string code { get; set; }
+        [Column("is_deleted")]
+        public bool IsDeleted { get; set; }
     }
 }
